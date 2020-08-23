@@ -74,6 +74,27 @@ const updateUserInfo = (sid, pw, new_user_info) => {
     })
 }
 
+const getCaptcha = (cid) => {
+    return service({
+        url: "/captcha",
+        method: "get",
+        params: {
+            cid,
+        }
+    })
+}
+
+const checkCaptcha = (cid, captcha) => {
+    return service({
+        url: "/checkcaptcha",
+        method: "get",
+        params: {
+            cid,
+            "v": captcha,
+        }
+    })
+}
+
 export default {
     check,
     isNewUser,
@@ -81,5 +102,7 @@ export default {
     logIn,
     getUserInfo,
     delUser,
-    updateUserInfo
+    updateUserInfo,
+    getCaptcha,
+    checkCaptcha
 }

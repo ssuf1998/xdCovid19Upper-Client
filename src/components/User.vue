@@ -40,6 +40,8 @@
         <br>
 
         <p class="text-center font-size-small text-gray">
+            上一次成功填报时间：{{ new Date(last_timestamp).toLocaleString("chinese", {hour12: false}) }}。
+            <br>
             客户端信息更新于：{{ new Date().toLocaleString("chinese", {hour12: false}) }}，
             <b-link @click="refresh">刷新页面</b-link>
             可更新。
@@ -139,6 +141,7 @@
                  :ok-disabled="change_pw_loading"
                  :no-close-on-backdrop="change_pw_loading"
                  :no-close-on-esc="change_pw_loading"
+                 @hidden="change_pw_data=['', '']"
         >
             <div class="my-2">
                 <b-form-input v-model="change_pw_data[0]"
@@ -146,6 +149,7 @@
                               placeholder="原密码"
                               id="old_pw_input"
                               @click="old_pw_not_same_show=false"
+                              autocomplete="off"
                 >
                 </b-form-input>
                 <br>
@@ -184,6 +188,7 @@ export default {
     data: function () {
         return {
             "user_info": {},
+            "last_timestamp": 0,
             "user_info_loading": true,
             "up_status_data": {
                 "morning": {
@@ -218,6 +223,7 @@ export default {
                 this.logged["pw"]).then(r => {
                 if (r.data.code === 0) {
                     this.user_info = r.data.user_info
+                    this.last_timestamp = parseInt(r.data.last_ts) * 1000
                     this.user_info_loading = false
                 } else {
                     this.$cookies.remove("logged")
@@ -310,7 +316,6 @@ export default {
                             this.$cookies.set("logged", this.logged)
 
                             this.$bvModal.hide("change_pw_dialog")
-                            this.change_pw_data = ["", ""]
                             this.$bvToast.toast(
                                 "修改密码成功！",
                                 {

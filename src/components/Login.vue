@@ -43,7 +43,7 @@
                class="btn-block"
                variant="primary"
                @click="do_login"
-               :disabled="!is_valid_input || login_loading"
+               :disabled="!is_login_input_valid || login_loading"
                v-text="login_loading ? '请稍等……' : '进入'"
         >
         </b-btn>
@@ -54,9 +54,10 @@
                  cancel-title="取消"
                  title="请输入邀请码"
                  @ok="do_sign_up"
-                 :ok-disabled="signup_loading"
+                 :ok-disabled="!is_invitation_input_valid || signup_loading"
                  :no-close-on-backdrop="signup_loading"
                  :no-close-on-esc="signup_loading"
+                 @hidden="invitation_code_val='';captcha_val=''"
         >
             <div class="my-2">
                 <b-form-input v-model="invitation_code_val"
@@ -64,8 +65,30 @@
                               id="invitation_code_input"
                               @click="invitation_code_err_show=false"
                               maxlength="6"
+                              autocomplete="off"
                 >
                 </b-form-input>
+
+                <br>
+
+                <div class="d-flex align-items-center">
+                    <b-form-input v-model="captcha_val"
+                                  placeholder="点验证码可刷新"
+                                  id="captcha_input"
+                                  @click="captcha_err_show=false"
+                                  @input="captcha_err_show=false"
+                                  maxlength="4"
+                                  autocomplete="off"
+                    >
+                    </b-form-input>
+
+                    <b-img :src="captcha_b64img"
+                           id="captchaBox"
+                           @click="do_captcha_b64img"
+                           class="ml-3"
+                    >
+                    </b-img>
+                </div>
 
                 <b-tooltip :show="invitation_code_err_show"
                            target="invitation_code_input"
@@ -73,6 +96,14 @@
                            placement="top"
                 >
                     {{ this.invitation_code_err_msg[this.invitation_code_err_code] }}
+                </b-tooltip>
+
+                <b-tooltip :show="captcha_err_show"
+                           target="captcha_input"
+                           triggers=""
+                           placement="top"
+                >
+                    验证码错误。
                 </b-tooltip>
             </div>
         </b-modal>
@@ -92,11 +123,27 @@ export default {
             "该邀请码已过期。",
             "该邀请码无效！"
         ],
-        "login_loading": false,
         "signup_loading": false,
-
+        "captcha_val": "",
+        "captcha_b64img": "",
+        "captcha_b64img_loading": false,
+        "captcha_err_show": false,
+        "login_loading": false,
     }),
     methods: {
+        "do_captcha_b64img"() {
+            if (!this.captcha_b64img_loading) {
+                this.captcha_val = ""
+                this.captcha_b64img_loading = true
+                this.$api.getCaptcha(this.sid_val).then(r => {
+                    if (r.data.code === 0) {
+                        this.captcha_b64img = r.data.img
+                    }
+                }).finally(() => {
+                    this.captcha_b64img_loading = false
+                })
+            }
+        },
         "do_login"() {
             this.login_loading = true
             this.$api.isNewUser(this.sid_val).then(r => {
@@ -104,6 +151,7 @@ export default {
                     if (r.data.bool === true) {
                         this.login_loading = false
                         this.$bvModal.show("invitation_code_dialog")
+                        this.do_captcha_b64img()
                     } else {
                         this.$api.logIn(this.sid_val, this.pw_val).then(r => {
 
@@ -170,45 +218,54 @@ export default {
             e.preventDefault()
             this.signup_loading = false
 
-            this.$api.signUp(this.sid_val, this.pw_val,
-                this.invitation_code_val).then(r => {
-                if (r.data.code === 0) {
-                    if (r.data.valid !== 0) {
-                        this.invitation_code_err_show = true
-                        this.invitation_code_err_code = r.data.valid - 1
-                    } else {
-                        this.$bvModal.hide("invitation_code_dialog")
+            this.$api.checkCaptcha(this.sid_val, this.captcha_val).then(r => {
+                if (r.data.code === 1) {
+                    this.captcha_err_show = true
+                    this.do_captcha_b64img()
+                    document.getElementById("captcha_input").focus()
+                } else if (r.data.code === 0) {
+                    this.$api.signUp(this.sid_val, this.pw_val,
+                        this.invitation_code_val).then(r => {
+                        if (r.data.code === 0) {
+                            if (r.data.valid !== 0) {
+                                this.invitation_code_err_show = true
+                                this.invitation_code_err_code = r.data.valid - 1
+                            } else {
+                                this.$bvModal.hide("invitation_code_dialog")
 
-                        this.$cookies.set("logged",
+                                this.$cookies.set("logged",
+                                    {
+                                        "sid": this.sid_val,
+                                        "pw": this.pw_val
+                                    }, "14d")
+
+                                this.$router.replace({name: "user"})
+                            }
+                        } else {
+                            this.$bvToast.toast(
+                                "未知错误！",
+                                {
+                                    title: "错误",
+                                    variant: "danger",
+                                    autoHideDelay: 3000,
+                                })
+                        }
+                    }).catch(err => {
+                        this.$bvToast.toast(
+                            err.message,
                             {
-                                "sid": this.sid_val,
-                                "pw": this.pw_val
-                            }, "14d")
+                                title: "错误",
+                                variant: "danger",
+                                autoHideDelay: 3000,
+                            })
 
-                        this.$router.replace({name: "user"})
-                    }
-                } else {
-                    this.$bvToast.toast(
-                        "未知错误！",
-                        {
-                            title: "错误",
-                            variant: "danger",
-                            autoHideDelay: 3000,
-                        })
-                }
-            }).catch(err => {
-                this.$bvToast.toast(
-                    err.message,
-                    {
-                        title: "错误",
-                        variant: "danger",
-                        autoHideDelay: 3000,
+                        this.$bvModal.hide("invitation_code_dialog")
                     })
-
-                this.$bvModal.hide("invitation_code_dialog")
+                }
             }).finally(() => {
                 this.signup_loading = false
             })
+
         }
     },
     mounted() {
@@ -217,11 +274,16 @@ export default {
         }
     },
     computed: {
-        "is_valid_input"() {
+        "is_login_input_valid"() {
             return this.sid_val.length === 11 &&
                 /^[0-9]+$/.test(this.sid_val) &&
                 this.pw_val.length !== 0
-        }
+        },
+        "is_invitation_input_valid"() {
+            return this.invitation_code_val.length === 6 &&
+                this.captcha_val.length === 4
+        },
+
     }
 }
 </script>
@@ -248,5 +310,9 @@ export default {
         color: gray;
         letter-spacing: 3px;
     }
+}
+
+#captchaBox {
+    width: 8rem;
 }
 </style>

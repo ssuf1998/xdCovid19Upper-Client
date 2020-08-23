@@ -77,7 +77,7 @@
                           class="text-gray font-size-small"
                     >
                     </span>
-                    <span v-text="`错误信息：${err_info['err_msg']}`"
+                    <span v-text="`错误信息：${err_info['raw_err']}`"
                           class="text-gray font-size-small"
                     >
                     </span>
@@ -118,22 +118,25 @@ export default {
         "err_info": {
             "msg": "发生了一个致命错误……暂时无法继续提供服务了。",
             "code": 0,
-            "err_msg": ""
+            "raw_err": ""
         }
     }),
     mounted() {
         this.$cookies.config('14d')
         this.$api.check().then(r => {
             if (r.data.code !== 0) {
+                if (r.data.msg !== "") {
+                    this.$set(this.err_info, "msg", r.data.msg)
+                }
                 this.$set(this.err_info, "code", r.data.code)
-                this.$set(this.err_info, "err_msg", r.data.msg)
+                this.$set(this.err_info, "raw_err", r.data.raw)
                 this.check_err_show = true
             } else {
                 this.check_loading = false
             }
         }).catch(err => {
             this.$set(this.err_info, "code", 2)
-            this.$set(this.err_info, "err_msg", err.message)
+            this.$set(this.err_info, "raw_err", err.message)
             this.check_err_show = true
         })
     },
