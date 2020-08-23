@@ -11,21 +11,61 @@
                 </div>
 
                 <b-card-footer>
-                    <div class="font-size-x-small text-gray">
+                    <div class="font-size-small text-gray">
                         <span>
                             仅学习目的，使用所造成的一切后果，由使用者承担相应责任。
-                        </span>
-                        <div class="d-flex justify-content-between align-items-end">
-                            西电晨午晚检自动填报器
-                            {{ init_ver_str }}
                             <br>
                             陕ICP备19018084号-1
-                            <b-link href="mailto:ssuf1998@126.com"
-                            >
+                        </span>
+                        <b-link class="float-right"
+                                v-b-modal:about_me_dialog
+                        >
+                            关于
+                        </b-link>
+                    </div>
+
+                    <b-modal id="about_me_dialog"
+                             centered
+                             ok-title="好的"
+                             ok-only
+                             title="关于"
+                    >
+                        <div class="my-2">
+                            <p class="font-weight-bold font-size-large">
+                                “在我厌烦了填晨午晚检后……”
+                            </p>
+
+                            <div class="d-flex my-3 flex-column">
+                                <div class="d-flex">
+                                    <span class="mr-2">
+                                        GitHub仓库
+                                    </span>
+                                    <b-link class="mx-2"
+                                            target="_blank"
+                                            href="https://github.com/ssuf1998/xdCovid19Upper-Client"
+                                    >
+                                        前端
+                                    </b-link>
+                                    <b-link class="ml-2"
+                                            target="_blank"
+                                            href="https://github.com/ssuf1998/xdCovid19Upper-Server"
+                                    >
+                                        后端
+                                    </b-link>
+                                </div>
+                                <span class="text-gray font-size-small">
+                                    点个星，即是对我最大的鼓励！
+                                    <br>
+                                    {{ init_ver_str }}
+                                </span>
+                            </div>
+
+                            <b-link href="mailto:ssuf1998@126.com">
                                 联系作者
                             </b-link>
                         </div>
-                    </div>
+
+                    </b-modal>
                 </b-card-footer>
             </div>
 
@@ -114,6 +154,19 @@ export default {
 @import "node_modules/bootstrap/scss/bootstrap";
 @import "node_modules/bootstrap-vue/src/index.scss";
 @import "styles/addition";
+
+@media screen and (min-width: 600px) {
+    #app {
+        width: 400px;
+        background-color: white;
+        margin: 0 auto;
+        box-shadow: 0 0 4rem rgba(0, 0, 0, 0.25);
+    }
+    body {
+        background-color: #eee;
+    }
+}
+
 
 body, html {
     height: 100%;
