@@ -40,7 +40,7 @@
         <br>
 
         <p class="text-center font-size-small text-gray">
-            上一次成功填报时间：{{ new Date(last_timestamp).toLocaleString("chinese", {hour12: false}) }}。
+            后台最近成功运行时间：{{ new Date(last_timestamp).toLocaleString("chinese", {hour12: false}) }}。
             <br>
             客户端信息更新于：{{ new Date().toLocaleString("chinese", {hour12: false}) }}，
             <b-link @click="refresh">刷新页面</b-link>

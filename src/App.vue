@@ -13,7 +13,7 @@
                 <b-card-footer>
                     <div class="font-size-small text-gray">
                         <span>
-                            仅学习目的，使用所造成的一切后果，由使用者承担相应责任。
+                            仅学习目的，使用所造成的一切后果，由使用者承担。
                             <br>
                             陕ICP备19018084号-1
                         </span>

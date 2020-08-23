@@ -44,7 +44,7 @@
                variant="primary"
                @click="do_login"
                :disabled="!is_login_input_valid || login_loading"
-               v-text="login_loading ? '请稍等……' : '进入'"
+               v-text="login_loading ? '请稍等……' : '登记'"
         >
         </b-btn>
 
