@@ -12,7 +12,8 @@
              v-for="(v, k) in up_status_data"
              :key="`up-status-${k}`"
         >
-            <b-icon :icon="v['icon']"></b-icon>
+<!--            <b-icon :icon="v['icon']"></b-icon>-->
+            <span>{{ v['icon'] }}</span>
             <span>{{ v['text'] }}</span>
 
 
@@ -192,15 +193,15 @@ export default {
             "user_info_loading": true,
             "up_status_data": {
                 "morning": {
-                    "icon": "circle",
+                    "icon": "☀️",
                     "text": "晨检",
                 },
                 "afternoon": {
-                    "icon": "circle-half",
+                    "icon": "☕",
                     "text": "午检",
                 },
                 "evening": {
-                    "icon": "circle-fill",
+                    "icon": "🌙",
                     "text": "晚检",
                 },
             },
