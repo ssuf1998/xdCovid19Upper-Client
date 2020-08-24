@@ -162,20 +162,17 @@ export default {
     #app {
         width: 400px;
         background-color: white;
-        margin: 0 auto;
         box-shadow: 0 0 4rem rgba(0, 0, 0, 0.25);
+
     }
     body {
+        display: flex;
+        justify-content: center;
         background-color: #eee;
     }
 }
 
-
 body, html {
-    height: 100%;
-}
-
-.full-height {
     height: 100%;
 }
 

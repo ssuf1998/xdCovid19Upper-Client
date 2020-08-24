@@ -1,6 +1,6 @@
 <template>
     <div class="app-page d-flex flex-column align-items-center"
-         id="LoginPage"
+         id="login_page"
     >
         <b-img :src="require('@/assets/logo.png')"
                width="64px"
@@ -8,7 +8,7 @@
                class="my-4"
         ></b-img>
         <p class="page-title"
-           id="loginTitle"
+           id="login_title"
         >
             西电晨午晚检<br>自动填报器
         </p>
@@ -39,7 +39,7 @@
             </b-form-input>
         </b-input-group>
 
-        <b-btn id="loginBtn"
+        <b-btn id="login_btn"
                class="btn-block"
                variant="primary"
                @click="do_login"
@@ -47,6 +47,7 @@
                v-text="login_loading ? '请稍等……' : '登记'"
         >
         </b-btn>
+
 
         <b-modal id="invitation_code_dialog"
                  centered
@@ -57,7 +58,8 @@
                  :ok-disabled="!is_invitation_input_valid || signup_loading"
                  :no-close-on-backdrop="signup_loading"
                  :no-close-on-esc="signup_loading"
-                 @hidden="invitation_code_val='';captcha_val=''"
+                 @hidden="invitation_code_val='';captcha_val='';
+                 invitation_code_err_show=false;captcha_err_show=false"
         >
             <div class="my-2">
                 <b-form-input v-model="invitation_code_val"
@@ -83,7 +85,7 @@
                     </b-form-input>
 
                     <b-img :src="captcha_b64img"
-                           id="captchaBox"
+                           id="captcha_box"
                            @click="do_captcha_b64img"
                            class="ml-3"
                     >
@@ -289,9 +291,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#LoginPage {
+#login_page {
 
-    #loginBtn {
+    #login_btn {
         margin-top: 2.5rem;
     }
 
@@ -303,7 +305,7 @@ export default {
         margin: 1rem;
     }
 
-    #loginTitle {
+    #login_title {
         text-align: center;
         font-size: large;
         font-weight: bold;
@@ -312,7 +314,7 @@ export default {
     }
 }
 
-#captchaBox {
+#captcha_box {
     width: 8rem;
 }
 </style>

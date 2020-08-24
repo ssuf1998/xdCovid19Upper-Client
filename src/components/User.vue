@@ -1,6 +1,6 @@
 <template>
     <div class="app-page d-flex flex-column align-items-center"
-         id="UserPage"
+         id="user_page"
          v-if="!user_info_loading"
     >
 
@@ -12,7 +12,7 @@
              v-for="(v, k) in up_status_data"
              :key="`up-status-${k}`"
         >
-<!--            <b-icon :icon="v['icon']"></b-icon>-->
+            <!--            <b-icon :icon="v['icon']"></b-icon>-->
             <span>{{ v['icon'] }}</span>
             <span>{{ v['text'] }}</span>
 
@@ -58,17 +58,16 @@
         </p>
 
         <b-btn class="btn-block"
-               id="resetPosBtn"
+               id="reset_pos_btn"
                variant="primary"
                @click="do_reset_pos"
                :disabled="get_pos_loading"
                v-text="get_pos_loading ? '请稍等……' : '重设定位'"
         >
-
         </b-btn>
 
         <b-btn class="btn-block"
-               id="exitBtn"
+               id="exit_btn"
                variant="outline-secondary"
                @click="do_exit"
         >
@@ -142,7 +141,9 @@
                  :ok-disabled="change_pw_loading"
                  :no-close-on-backdrop="change_pw_loading"
                  :no-close-on-esc="change_pw_loading"
-                 @hidden="change_pw_data=['', '']"
+                 @hidden="change_pw_data=['', ''];
+                 old_pw_not_same_show=false;
+                 new_pw_is_blank_show=false"
         >
             <div class="my-2">
                 <b-form-input v-model="change_pw_data[0]"
@@ -213,7 +214,6 @@ export default {
             "change_pw_loading": false,
             "change_pause_loading": false,
             "del_user_loading": false,
-
         }
     },
     mounted() {
@@ -427,16 +427,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#UserPage {
+#user_page {
     .up-status {
         width: 60%;
     }
 
-    #resetPosBtn {
+    #reset_pos_btn {
         margin-top: 2rem;
     }
 
-    #exitBtn {
+    #exit_btn {
         margin-top: 2rem;
     }
 
