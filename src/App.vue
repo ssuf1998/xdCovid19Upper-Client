@@ -17,11 +17,14 @@
                             <br>
                             陕ICP备19018084号-1
                         </span>
-                        <b-link class="float-right"
+
+                        <b-icon icon="info-square-fill"
+                                variant="secondary"
+                                class="icon-btn float-right font-size-normal"
                                 v-b-modal:about_me_dialog
                         >
                             关于
-                        </b-link>
+                        </b-icon>
                     </div>
 
                     <b-modal id="about_me_dialog"
@@ -29,6 +32,7 @@
                              ok-title="好的"
                              ok-only
                              title="关于"
+                             scrollable
                     >
                         <div class="my-2">
                             <p class="font-weight-bold font-size-large">
@@ -191,6 +195,16 @@ body, html {
     button {
         outline: none;
     }
+}
 
+.icon-btn {
+    pointer-events: auto;
+    opacity: 0.6;
+    cursor: pointer;
+    outline: none;
+
+    &:hover {
+        opacity: 1;
+    }
 }
 </style>

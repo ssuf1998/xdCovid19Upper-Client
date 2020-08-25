@@ -1,4 +1,5 @@
 import service from "./request"
+import Vue from "vue"
 
 const check = () => {
     return service({
@@ -40,35 +41,35 @@ const logIn = (sid, pw) => {
     })
 }
 
-const getUserInfo = (sid, pw) => {
+const getUserInfo = () => {
     return service({
         url: "/getuserinfo",
         method: "post",
         data: {
-            sid,
-            pw,
+            "sid": Vue.prototype.$cookies.get("logged")["sid"],
+            "pw": Vue.prototype.$cookies.get("logged")["pw"],
         }
     })
 }
 
-const delUser = (sid, pw) => {
+const delUser = () => {
     return service({
         url: "/deluser",
         method: "post",
         data: {
-            sid,
-            pw,
+            "sid": Vue.prototype.$cookies.get("logged")["sid"],
+            "pw": Vue.prototype.$cookies.get("logged")["pw"],
         }
     })
 }
 
-const updateUserInfo = (sid, pw, new_user_info) => {
+const updateUserInfo = (new_user_info) => {
     return service({
         url: "/updateuserinfo",
         method: "post",
         data: {
-            sid,
-            pw,
+            "sid": Vue.prototype.$cookies.get("logged")["sid"],
+            "pw": Vue.prototype.$cookies.get("logged")["pw"],
             new_user_info
         }
     })

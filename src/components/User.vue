@@ -12,7 +12,6 @@
              v-for="(v, k) in up_status_data"
              :key="`up-status-${k}`"
         >
-            <!--            <b-icon :icon="v['icon']"></b-icon>-->
             <span>{{ v['icon'] }}</span>
             <span>{{ v['text'] }}</span>
 
@@ -48,15 +47,6 @@
             可更新。
         </p>
 
-        <p class="text-center font-size-small text-gray">
-            如长时间都保持着“暂未填报”状态，请点击
-            <b-link href="https://xxcapp.xidian.edu.cn/site/ncov/xidiandailyup"
-                    target="_blank">
-                这里
-            </b-link>
-            进入官方系统手动填报，或联系作者。
-        </p>
-
         <b-btn class="btn-block"
                id="reset_pos_btn"
                variant="primary"
@@ -74,7 +64,7 @@
             退出
         </b-btn>
 
-        <div id="extra_func_box" class="d-flex">
+        <div id="extra_func_box" class="d-flex align-items-center">
             <b-link v-b-modal:del_user_dialog
                     href="#">
                 注销账号
@@ -100,6 +90,14 @@
                 修改密码
             </b-link>
 
+            <b-icon icon="question-circle-fill"
+                    variant="secondary"
+                    class="icon-btn"
+                    v-b-modal:question_dialog
+            >
+                ?
+            </b-icon>
+
         </div>
 
         <b-modal id="del_user_dialog"
@@ -111,6 +109,7 @@
                  :ok-disabled="del_user_loading"
                  :no-close-on-backdrop="del_user_loading"
                  :no-close-on-esc="del_user_loading"
+                 scrollable
         >
             <p class="my-2">
                 注销账户后，服务器上将不再保存您的学号及密码，且将停止该账户的自动填报，是否确定？
@@ -126,6 +125,7 @@
                  :ok-disabled="change_pause_loading"
                  :no-close-on-backdrop="change_pause_loading"
                  :no-close-on-esc="change_pause_loading"
+                 scrollable
         >
             <p class="my-2">
                 暂停后，仍可恢复，您的学号及密码仍会保存在服务器上，是否确定？
@@ -138,12 +138,12 @@
                  cancel-title="取消"
                  title="修改密码"
                  @ok="do_change_pw"
-                 :ok-disabled="change_pw_loading"
+                 :ok-disabled="!change_pw_all_valid || change_pw_loading"
                  :no-close-on-backdrop="change_pw_loading"
                  :no-close-on-esc="change_pw_loading"
                  @hidden="change_pw_data=['', ''];
-                 old_pw_not_same_show=false;
-                 new_pw_is_blank_show=false"
+                 old_pw_not_same_show=false;"
+                 scrollable
         >
             <div class="my-2">
                 <b-form-input v-model="change_pw_data[0]"
@@ -159,7 +159,6 @@
                               type="password"
                               placeholder="新密码"
                               id="new_pw_input"
-                              @click="new_pw_is_blank_show=false"
                 >
                 </b-form-input>
 
@@ -170,23 +169,31 @@
                 >
                     与当前密码不一致，请核对。
                 </b-tooltip>
-
-                <b-tooltip :show="new_pw_is_blank_show"
-                           target="new_pw_input"
-                           triggers=""
-                           placement="top"
-                >
-                    新密码不能为空！
-                </b-tooltip>
             </div>
+        </b-modal>
+
+
+        <b-modal id="question_dialog"
+                 centered
+                 ok-title="好的"
+                 ok-only
+                 title="有疑问？"
+                 scrollable
+        >
+            <Question></Question>
         </b-modal>
 
     </div>
 </template>
 
 <script>
+import Question from "@/components/Question";
+
 export default {
     name: "User",
+    components: {
+        Question
+    },
     data: function () {
         return {
             "user_info": {},
@@ -209,7 +216,6 @@ export default {
             "get_pos_loading": false,
             "change_pw_data": ["", ""],
             "old_pw_not_same_show": false,
-            "new_pw_is_blank_show": false,
 
             "change_pw_loading": false,
             "change_pause_loading": false,
@@ -220,8 +226,7 @@ export default {
         if (!this.logged) {
             this.$router.replace({name: "home"})
         } else {
-            this.$api.getUserInfo(this.logged["sid"],
-                this.logged["pw"]).then(r => {
+            this.$api.getUserInfo().then(r => {
                 if (r.data.code === 0) {
                     this.user_info = r.data.user_info
                     this.last_timestamp = parseInt(r.data.last_ts) * 1000
@@ -245,8 +250,6 @@ export default {
                 let long = success.coords.longitude.toFixed(6)
 
                 this.$api.updateUserInfo(
-                    this.logged["sid"],
-                    this.logged["pw"],
                     {
                         "coords": {
                             "latitude": lat,
@@ -301,58 +304,50 @@ export default {
             if (this.change_pw_data[0] !== this.logged.pw) {
                 this.old_pw_not_same_show = true
             } else {
-                if (this.change_pw_data[1].length === 0) {
-                    this.new_pw_is_blank_show = true
-                } else {
-                    this.change_pw_loading = true
+                this.change_pw_loading = true
 
-                    this.$api.updateUserInfo(
-                        this.logged["sid"],
-                        this.logged["pw"],
-                        {
-                            "pw": this.change_pw_data[1]
-                        }).then(r => {
-                        if (r.data.code === 0) {
-                            this.$set(this.logged, "pw", this.change_pw_data[1])
-                            this.$cookies.set("logged", this.logged)
+                this.$api.updateUserInfo(
+                    {
+                        "pw": this.change_pw_data[1]
+                    }).then(r => {
+                    if (r.data.code === 0) {
+                        this.$set(this.logged, "pw", this.change_pw_data[1])
+                        this.$cookies.set("logged", this.logged)
 
-                            this.$bvModal.hide("change_pw_dialog")
-                            this.$bvToast.toast(
-                                "修改密码成功！",
-                                {
-                                    title: "修改密码",
-                                    variant: "success",
-                                    autoHideDelay: 3000,
-                                })
-                        } else {
-                            this.$bvToast.toast(
-                                "未知错误！",
-                                {
-                                    title: "错误",
-                                    variant: "danger",
-                                    autoHideDelay: 3000,
-                                })
-                        }
-                    }).catch(err => {
+                        this.$bvModal.hide("change_pw_dialog")
                         this.$bvToast.toast(
-                            err.message,
+                            "修改密码成功！",
+                            {
+                                title: "修改密码",
+                                variant: "success",
+                                autoHideDelay: 3000,
+                            })
+                    } else {
+                        this.$bvToast.toast(
+                            "未知错误！",
                             {
                                 title: "错误",
                                 variant: "danger",
                                 autoHideDelay: 3000,
                             })
-                    }).finally(() => {
-                        this.change_pw_loading = false
-                    })
-                }
+                    }
+                }).catch(err => {
+                    this.$bvToast.toast(
+                        err.message,
+                        {
+                            title: "错误",
+                            variant: "danger",
+                            autoHideDelay: 3000,
+                        })
+                }).finally(() => {
+                    this.change_pw_loading = false
+                })
             }
         },
         "do_change_pause"(bool) {
             this.change_pause_loading = true
 
             this.$api.updateUserInfo(
-                this.logged["sid"],
-                this.logged["pw"],
                 {
                     "is_pause": bool
                 }).then(r => {
@@ -389,7 +384,7 @@ export default {
         },
         "do_del_user"() {
             this.del_user_loading = true
-            this.$api.delUser(this.logged["sid"], this.logged["pw"]).then(r => {
+            this.$api.delUser().then(r => {
                 if (r.data.code === 0) {
                     this.$cookies.remove("logged")
                     this.$router.replace({name: "home"})
@@ -421,6 +416,9 @@ export default {
     computed: {
         "logged"() {
             return this.$cookies.get("logged")
+        },
+        "change_pw_all_valid"() {
+            return this.change_pw_data[0].length !== 0 && this.change_pw_data[1].length !== 0
         }
     }
 }

@@ -59,6 +59,7 @@
                  :no-close-on-backdrop="signup_loading"
                  :no-close-on-esc="signup_loading"
                  @hidden="hidden_invitation_dialog_clear"
+                 scrollable
         >
             <div class="my-2">
                 <b-form-input v-model="invitation_code_val"
@@ -303,7 +304,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #login_page {
 
     #login_btn {
@@ -325,9 +326,9 @@ export default {
         color: gray;
         letter-spacing: 3px;
     }
-}
 
-#captcha_box {
-    width: 8rem;
+    #captcha_box {
+        width: 8rem;
+    }
 }
 </style>
