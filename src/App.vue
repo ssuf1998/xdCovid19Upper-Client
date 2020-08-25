@@ -163,7 +163,6 @@ export default {
         width: 400px;
         background-color: white;
         box-shadow: 0 0 4rem rgba(0, 0, 0, 0.25);
-
     }
     body {
         display: flex;

@@ -58,8 +58,7 @@
                  :ok-disabled="!is_invitation_input_valid || signup_loading"
                  :no-close-on-backdrop="signup_loading"
                  :no-close-on-esc="signup_loading"
-                 @hidden="invitation_code_val='';captcha_val='';
-                 invitation_code_err_show=false;captcha_err_show=false"
+                 @hidden="hidden_invitation_dialog_clear"
         >
             <div class="my-2">
                 <b-form-input v-model="invitation_code_val"
@@ -115,23 +114,31 @@
 <script>
 export default {
     name: "Login",
-    data: () => ({
-        "sid_val": "",
-        "pw_val": "",
-        "invitation_code_val": "",
-        "invitation_code_err_show": false,
-        "invitation_code_err_code": 0,
-        "invitation_code_err_msg": [
-            "该邀请码已过期。",
-            "该邀请码无效！"
-        ],
-        "signup_loading": false,
-        "captcha_val": "",
-        "captcha_b64img": "",
-        "captcha_b64img_loading": false,
-        "captcha_err_show": false,
-        "login_loading": false,
-    }),
+    data: function () {
+        return {
+            "sid_val": "",
+            "pw_val": "",
+            "invitation_code_val": this.outer_code,
+            "invitation_code_err_show": false,
+            "invitation_code_err_code": 0,
+            "invitation_code_err_msg": [
+                "该邀请码已过期。",
+                "该邀请码无效！"
+            ],
+            "signup_loading": false,
+            "captcha_val": "",
+            "captcha_b64img": "",
+            "captcha_b64img_loading": false,
+            "captcha_err_show": false,
+            "login_loading": false,
+        }
+    },
+    props: {
+        "outer_code": {
+            type: String,
+            default: ""
+        }
+    },
     methods: {
         "do_captcha_b64img"() {
             if (!this.captcha_b64img_loading) {
@@ -268,6 +275,12 @@ export default {
                 this.signup_loading = false
             })
 
+        },
+        "hidden_invitation_dialog_clear"() {
+            this.invitation_code_val = this.outer_code
+            this.captcha_val = ""
+            this.invitation_code_err_show = false
+            this.captcha_err_show = false
         }
     },
     mounted() {

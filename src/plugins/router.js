@@ -11,8 +11,15 @@ Vue.use(VueRouter);
 const router_ = new VueRouter({
     routes: [
         {
-            path: "/",
+            path: '/',
+            redirect: {name: "home"}
+        },
+        {
+            path: "/home",
             name: "home",
+            props: (route) => ({
+                outer_code: route.query.code
+            }),
             component: () => import("../components/Login"),
             meta: {
                 title: "西电晨午晚检自动填报器"
