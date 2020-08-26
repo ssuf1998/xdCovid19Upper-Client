@@ -75,6 +75,13 @@ const updateUserInfo = (new_user_info) => {
     })
 }
 
+const getBaseSysInfo = () => {
+    return service({
+        url: "/getbasesysinfo",
+        method: "get",
+    })
+}
+
 const getCaptcha = (cid) => {
     return service({
         url: "/captcha",
@@ -104,6 +111,7 @@ export default {
     getUserInfo,
     delUser,
     updateUserInfo,
+    getBaseSysInfo,
     getCaptcha,
     checkCaptcha
 }

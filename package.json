@@ -1,6 +1,6 @@
 {
   "name": "xd_covid19_upper",
-  "version": "0.6.6.b1",
+  "version": "0.6.9",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -12,6 +12,7 @@
     "bootstrap": "^4.5.2",
     "bootstrap-vue": "^2.16.0",
     "core-js": "^3.6.5",
+    "node-emoji": "^1.10.0",
     "vue": "^2.6.11",
     "vue-cookies": "^1.7.3",
     "vue-router": "^3.4.3"

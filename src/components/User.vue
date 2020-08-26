@@ -12,7 +12,7 @@
              v-for="(v, k) in up_status_data"
              :key="`up-status-${k}`"
         >
-            <span>{{ v['icon'] }}</span>
+            <span>{{ get_emoji(v['icon']) }}</span>
             <span>{{ v['text'] }}</span>
 
             <b-badge :variant="up_badge_data[user_info['is_up'][k]][0]"
@@ -39,9 +39,13 @@
         <br>
 
         <p class="text-center font-size-small text-gray">
-            后端最近成功运行时间：{{ new Date(last_timestamp).toLocaleString("chinese", {hour12: false}) }}。
+            后端最近成功运行时间：{{
+                new Date(last_timestamp).toLocaleString("chinese", {hour12: false})
+            }}。
             <br>
-            客户端信息更新于：{{ new Date().toLocaleString("chinese", {hour12: false}) }}，
+            客户端信息更新于：{{
+                new Date().toLocaleString("chinese", {hour12: false})
+            }}，
             <b-link @click="refresh">刷新页面</b-link>
             可更新。
         </p>
@@ -200,15 +204,15 @@ export default {
             "user_info_loading": true,
             "up_status_data": {
                 "morning": {
-                    "icon": "☀️",
+                    "icon": ":sunny:",
                     "text": "晨检",
                 },
                 "afternoon": {
-                    "icon": "☕",
+                    "icon": ":coffee:",
                     "text": "午检",
                 },
                 "evening": {
-                    "icon": "🌙",
+                    "icon": ":crescent_moon:",
                     "text": "晚检",
                 },
             },
@@ -234,7 +238,14 @@ export default {
             this.$api.getUserInfo().then(r => {
                 if (r.data.code === 0) {
                     this.user_info = r.data.user_info
-                    this.last_timestamp = parseInt(r.data.last_ts) * 1000
+                    this.$api.getBaseSysInfo().then(r => {
+                        this.last_timestamp = parseInt(r.data.data.last_suc_timestamp) * 1000
+                        let icons = r.data.data.up_icons
+
+                        this.$set(this.up_status_data.morning, "icon", icons[0])
+                        this.$set(this.up_status_data.afternoon, "icon", icons[1])
+                        this.$set(this.up_status_data.evening, "icon", icons[2])
+                    })
                     this.user_info_loading = false
                 } else {
                     this.$cookies.remove("logged")
@@ -416,6 +427,9 @@ export default {
         },
         "refresh"() {
             location.reload()
+        },
+        "get_emoji"(emoji_str) {
+            return this.$emoji.get(emoji_str)
         }
     },
     computed: {
