@@ -60,7 +60,7 @@
                                 <span class="text-gray font-size-small">
                                     点个星，即是对我最大的鼓励！
                                     <br>
-                                    {{ init_ver_str }}
+                                    {{ ver_str }}
                                 </span>
                             </div>
 
@@ -150,7 +150,7 @@ export default {
         },
     },
     computed: {
-        "init_ver_str"() {
+        "ver_str"() {
             return `client ${process.env.VUE_APP_CLIENT_VERSION} server ${process.env.VUE_APP_SERVER_VERSION}`
         }
     }
@@ -207,4 +207,5 @@ body, html {
         opacity: 1;
     }
 }
+
 </style>

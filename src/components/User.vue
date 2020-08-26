@@ -15,13 +15,18 @@
             <span>{{ v['icon'] }}</span>
             <span>{{ v['text'] }}</span>
 
-
-            <b-badge :variant="['secondary', 'success', 'warning'][user_info['is_up'][k]]"
+            <b-badge :variant="up_badge_data[user_info['is_up'][k]][0]"
                      v-if="user_info['is_up'][k]!==2
                      || (!user_info['is_pw_wrong']
                      && !user_info['is_pause'])"
             >
-                {{ ["状态未知", "填报成功", "暂未填报"][user_info["is_up"][k]] }}
+                {{ up_badge_data[user_info['is_up'][k]][1] }}
+            </b-badge>
+
+            <b-badge variant="info"
+                     v-if="user_info['is_pause'] && user_info['is_up'][k]===2 && !user_info['is_pw_wrong']"
+            >
+                暂停填报
             </b-badge>
 
             <b-badge variant="danger"
@@ -29,18 +34,12 @@
             >
                 账户异常
             </b-badge>
-
-            <b-badge variant="info"
-                     v-if="user_info['is_pause'] && user_info['is_up'][k]===2"
-            >
-                暂停填报
-            </b-badge>
         </div>
 
         <br>
 
         <p class="text-center font-size-small text-gray">
-            后台最近成功运行时间：{{ new Date(last_timestamp).toLocaleString("chinese", {hour12: false}) }}。
+            后端最近成功运行时间：{{ new Date(last_timestamp).toLocaleString("chinese", {hour12: false}) }}。
             <br>
             客户端信息更新于：{{ new Date().toLocaleString("chinese", {hour12: false}) }}，
             <b-link @click="refresh">刷新页面</b-link>
@@ -213,6 +212,12 @@ export default {
                     "text": "晚检",
                 },
             },
+            "up_badge_data": [
+                ["secondary", "状态未知"],
+                ["success", "填报成功"],
+                ["warning", "暂未填报"],
+                ["info", "正在填报"],
+            ],
             "get_pos_loading": false,
             "change_pw_data": ["", ""],
             "old_pw_not_same_show": false,
@@ -424,7 +429,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #user_page {
     .up-status {
         width: 60%;
@@ -447,6 +452,4 @@ export default {
         }
     }
 }
-
-
 </style>

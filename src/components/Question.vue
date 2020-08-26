@@ -2,10 +2,10 @@
     <div class="my-2">
         <span class="font-weight-bold">
             始终是
-            <b-badge variant="warning" class="mr-1">
+            <b-badge variant="warning" class="mx-1">
                 暂未填报
             </b-badge>
-            <b-badge variant="secondary" class="ml-1">
+            <b-badge variant="secondary" class="mx-1">
                 状态未知
             </b-badge>
             状态？
@@ -28,7 +28,7 @@
         <br>
 
         <span class="font-weight-bold">
-                后端程序多久跑一次？感觉数据刷新很慢？
+            后端程序多久跑一次？感觉数据刷新很慢？
         </span>
         <br>
         <span class="font-size-small">
@@ -48,6 +48,24 @@
         <span class="font-size-small">
             有！目前我不知道怎么在密码加密的情况下实现这个系统，
             如果有人介意，可以不用。
+        </span>
+
+        <br>
+        <br>
+
+        <span class="font-weight-bold">
+            会被识别出来是用程序自动填报的吗？
+        </span>
+        <br>
+        <span class="font-size-small">
+            也许……目前使用了假
+            <b-link href="https://baike.baidu.com/item/%E7%94%A8%E6%88%B7%E4%BB%A3%E7%90%86/1471005"
+                    target="_blank"
+            >
+                UA
+            </b-link>
+            和假地理位置注入，
+            但是ip伪造起来比较麻烦，所以说还是有可能被发现的。
         </span>
 
         <br>
