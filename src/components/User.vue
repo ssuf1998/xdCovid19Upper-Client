@@ -112,7 +112,6 @@
                  :ok-disabled="del_user_loading"
                  :no-close-on-backdrop="del_user_loading"
                  :no-close-on-esc="del_user_loading"
-                 scrollable
         >
             <p class="my-2">
                 注销账户后，服务器上将不再保存您的学号及密码，且将停止该账户的自动填报，是否确定？
@@ -128,7 +127,6 @@
                  :ok-disabled="change_pause_loading"
                  :no-close-on-backdrop="change_pause_loading"
                  :no-close-on-esc="change_pause_loading"
-                 scrollable
         >
             <p class="my-2">
                 暂停后，仍可恢复，您的学号及密码仍会保存在服务器上，是否确定？
@@ -146,7 +144,6 @@
                  :no-close-on-esc="change_pw_loading"
                  @hidden="change_pw_data=['', ''];
                  old_pw_not_same_show=false;"
-                 scrollable
         >
             <div class="my-2">
                 <b-form-input v-model="change_pw_data[0]"
@@ -154,6 +151,8 @@
                               placeholder="原密码"
                               id="old_pw_input"
                               @click="old_pw_not_same_show=false"
+                              @input="old_pw_not_same_show=false"
+                              @blur="old_pw_not_same_show=false"
                               autocomplete="off"
                 >
                 </b-form-input>
@@ -236,21 +235,20 @@ export default {
             this.$router.replace({name: "home"})
         } else {
             this.$api.getUserInfo().then(r => {
-                if (r.data.code === 0) {
-                    this.user_info = r.data.user_info
-                    this.$api.getBaseSysInfo().then(r => {
-                        this.last_timestamp = parseInt(r.data.data.last_suc_timestamp) * 1000
-                        let icons = r.data.data.up_icons
+                this.user_info = r.data.user_info
+                this.$api.getBaseSysInfo().then(r => {
+                    this.last_timestamp = parseInt(r.data.info["last_suc_timestamp"]) * 1000
+                    let icons = r.data.info["up_icons"]
 
-                        this.$set(this.up_status_data.morning, "icon", icons[0])
-                        this.$set(this.up_status_data.afternoon, "icon", icons[1])
-                        this.$set(this.up_status_data.evening, "icon", icons[2])
-                    })
+                    this.$set(this.up_status_data.morning, "icon", icons[0])
+                    this.$set(this.up_status_data.afternoon, "icon", icons[1])
+                    this.$set(this.up_status_data.evening, "icon", icons[2])
+                }).finally(() => {
                     this.user_info_loading = false
-                } else {
-                    this.$cookies.remove("logged")
-                    this.$router.replace({name: "home"})
-                }
+                })
+            }).catch(() => {
+                this.$cookies.remove("logged")
+                this.$router.replace({name: "home"})
             })
         }
     },
@@ -271,27 +269,17 @@ export default {
                             "latitude": lat,
                             "longitude": long
                         }
-                    }).then(r => {
-                    if (r.data.code === 0) {
-                        this.$bvToast.toast(
-                            `新位置的纬度为${lat}, 经度为${long}。`,
-                            {
-                                title: "重设定位成功",
-                                variant: "success",
-                                autoHideDelay: 3000,
-                            })
-                    } else {
-                        this.$bvToast.toast(
-                            "未知错误！",
-                            {
-                                title: "错误",
-                                variant: "danger",
-                                autoHideDelay: 3000,
-                            })
-                    }
+                    }).then(() => {
+                    this.$bvToast.toast(
+                        `新位置的纬度为${lat}, 经度为${long}。`,
+                        {
+                            title: "重设定位成功",
+                            variant: "success",
+                            autoHideDelay: 3000,
+                        })
                 }).catch(err => {
                     this.$bvToast.toast(
-                        err.message,
+                        err.response.data.msg || err.message,
                         {
                             title: "错误",
                             variant: "danger",
@@ -309,7 +297,6 @@ export default {
                         variant: "danger",
                         autoHideDelay: 3000,
                     })
-
                 this.get_pos_loading = false
             }, {
                 timeout: 10000
@@ -319,37 +306,28 @@ export default {
             e.preventDefault()
             if (this.change_pw_data[0] !== this.logged.pw) {
                 this.old_pw_not_same_show = true
+                document.getElementById("old_pw_input").focus()
             } else {
                 this.change_pw_loading = true
 
                 this.$api.updateUserInfo(
                     {
                         "pw": this.change_pw_data[1]
-                    }).then(r => {
-                    if (r.data.code === 0) {
-                        this.$set(this.logged, "pw", this.change_pw_data[1])
-                        this.$cookies.set("logged", this.logged)
+                    }).then(() => {
+                    this.$set(this.logged, "pw", this.change_pw_data[1])
+                    this.$cookies.set("logged", this.logged)
 
-                        this.$bvModal.hide("change_pw_dialog")
-                        this.$bvToast.toast(
-                            "修改密码成功！",
-                            {
-                                title: "修改密码",
-                                variant: "success",
-                                autoHideDelay: 3000,
-                            })
-                    } else {
-                        this.$bvToast.toast(
-                            "未知错误！",
-                            {
-                                title: "错误",
-                                variant: "danger",
-                                autoHideDelay: 3000,
-                            })
-                    }
+                    this.$bvModal.hide("change_pw_dialog")
+                    this.$bvToast.toast(
+                        "修改密码成功！",
+                        {
+                            title: "修改密码",
+                            variant: "success",
+                            autoHideDelay: 3000,
+                        })
                 }).catch(err => {
                     this.$bvToast.toast(
-                        err.message,
+                        err.response.data.msg || err.message,
                         {
                             title: "错误",
                             variant: "danger",
@@ -366,29 +344,18 @@ export default {
             this.$api.updateUserInfo(
                 {
                     "is_pause": bool
-                }).then(r => {
-                if (r.data.code === 0) {
-                    this.user_info["is_pause"] = bool
-
-                    this.$bvToast.toast(
-                        "操作成功！",
-                        {
-                            title: bool ? "暂停填报" : "恢复填报",
-                            variant: "success",
-                            autoHideDelay: 3000,
-                        })
-                } else {
-                    this.$bvToast.toast(
-                        "未知错误！",
-                        {
-                            title: "错误",
-                            variant: "danger",
-                            autoHideDelay: 3000,
-                        })
-                }
+                }).then(() => {
+                this.user_info["is_pause"] = bool
+                this.$bvToast.toast(
+                    "操作成功！",
+                    {
+                        title: bool ? "暂停填报" : "恢复填报",
+                        variant: "success",
+                        autoHideDelay: 3000,
+                    })
             }).catch(err => {
                 this.$bvToast.toast(
-                    err.message,
+                    err.response.data.msg || err.message,
                     {
                         title: "错误",
                         variant: "danger",
@@ -400,22 +367,13 @@ export default {
         },
         "do_del_user"() {
             this.del_user_loading = true
-            this.$api.delUser().then(r => {
-                if (r.data.code === 0) {
-                    this.$cookies.remove("logged")
-                    this.$router.replace({name: "home"})
-                } else {
-                    this.$bvToast.toast(
-                        "未知错误！",
-                        {
-                            title: "错误",
-                            variant: "danger",
-                            autoHideDelay: 3000,
-                        })
-                }
+
+            this.$api.delUser().then(() => {
+                this.$cookies.remove("logged")
+                this.$router.replace({name: "home"})
             }).catch(err => {
                 this.$bvToast.toast(
-                    err.message,
+                    err.response.data.msg || err.message,
                     {
                         title: "错误",
                         variant: "danger",

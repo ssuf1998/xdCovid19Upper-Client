@@ -5,7 +5,7 @@
                    class="full-height"
         >
             <div class="d-flex flex-column justify-content-between full-height">
-                <div>
+                <div v-if="!check_err_show">
                     <router-view>
                     </router-view>
                 </div>
@@ -82,6 +82,7 @@
                     >
                     </span>
                     <span v-text="`错误信息：${err_info['raw_err']}`"
+                          v-if="err_info['raw_err']!==''"
                           class="text-gray font-size-small"
                     >
                     </span>
@@ -126,21 +127,18 @@ export default {
         }
     }),
     mounted() {
-        this.$cookies.config('14d')
-        this.$api.check().then(r => {
-            if (r.data.code !== 0) {
-                if (r.data.msg !== "") {
-                    this.$set(this.err_info, "msg", r.data.msg)
-                }
-                this.$set(this.err_info, "code", r.data.code)
-                this.$set(this.err_info, "raw_err", r.data.raw)
-                this.check_err_show = true
-            } else {
-                this.check_loading = false
-            }
+        this.$cookies.config("14d")
+        this.$api.check().then(() => {
+            this.check_loading = false
         }).catch(err => {
-            this.$set(this.err_info, "code", 2)
-            this.$set(this.err_info, "raw_err", err.message)
+            if (err.response) {
+                this.$set(this.err_info, "msg", err.response.data.msg || "")
+                this.$set(this.err_info, "code", err.response.data.code)
+                this.$set(this.err_info, "raw_err", err.response.data.raw)
+            } else {
+                this.$set(this.err_info, "code", 999)
+                this.$set(this.err_info, "raw_err", err.message)
+            }
             this.check_err_show = true
         })
     },

@@ -59,13 +59,15 @@
                  :no-close-on-backdrop="signup_loading"
                  :no-close-on-esc="signup_loading"
                  @hidden="hidden_invitation_dialog_clear"
-                 scrollable
+
         >
             <div class="my-2">
                 <b-form-input v-model="invitation_code_val"
                               placeholder="6位邀请码"
                               id="invitation_code_input"
                               @click="invitation_code_err_show=false"
+                              @input="invitation_code_err_show=false"
+                              @blur="invitation_code_err_show=false"
                               maxlength="6"
                               autocomplete="off"
                 >
@@ -79,6 +81,7 @@
                                   id="captcha_input"
                                   @click="captcha_err_show=false"
                                   @input="captcha_err_show=false"
+                                  @blur="captcha_err_show=false"
                                   maxlength="4"
                                   autocomplete="off"
                     >
@@ -97,7 +100,7 @@
                            triggers=""
                            placement="top"
                 >
-                    {{ this.invitation_code_err_msg[this.invitation_code_err_code] }}
+                    {{ this.invitation_code_err_msg }}
                 </b-tooltip>
 
                 <b-tooltip :show="captcha_err_show"
@@ -108,7 +111,9 @@
                     验证码错误。
                 </b-tooltip>
             </div>
+
         </b-modal>
+
     </div>
 </template>
 
@@ -121,11 +126,7 @@ export default {
             "pw_val": "",
             "invitation_code_val": this.outer_code,
             "invitation_code_err_show": false,
-            "invitation_code_err_code": 0,
-            "invitation_code_err_msg": [
-                "该邀请码已过期。",
-                "该邀请码无效！"
-            ],
+            "invitation_code_err_msg": 0,
             "signup_loading": false,
             "captcha_val": "",
             "captcha_b64img": "",
@@ -146,9 +147,7 @@ export default {
                 this.captcha_val = ""
                 this.captcha_b64img_loading = true
                 this.$api.getCaptcha(this.sid_val).then(r => {
-                    if (r.data.code === 0) {
-                        this.captcha_b64img = r.data.img
-                    }
+                    this.captcha_b64img = r.data.img
                 }).finally(() => {
                     this.captcha_b64img_loading = false
                 })
@@ -156,120 +155,66 @@ export default {
         },
         "do_login"() {
             this.login_loading = true
+
             this.$api.isNewUser(this.sid_val).then(r => {
-                if (r.data.code === 0) {
-                    if (r.data.bool === true) {
-                        this.login_loading = false
-                        this.$bvModal.show("invitation_code_dialog")
-                        this.do_captcha_b64img()
-                    } else {
-                        this.$api.logIn(this.sid_val, this.pw_val).then(r => {
-
-                            if (r.data.code === 0) {
-                                this.$cookies.set("logged",
-                                    {
-                                        "sid": this.sid_val,
-                                        "pw": this.pw_val
-                                    })
-
-                                this.$router.replace({name: "user"})
-
-                            } else if (r.data.code === 1) {
-                                this.$bvToast.toast(
-                                    "密码错误，请核对后重试！",
-                                    {
-                                        title: "错误",
-                                        variant: "danger",
-                                        autoHideDelay: 3000,
-                                    })
-                            } else {
-                                this.$bvToast.toast(
-                                    "未知错误！",
-                                    {
-                                        title: "错误",
-                                        variant: "danger",
-                                        autoHideDelay: 3000,
-                                    })
-                            }
-                        }).catch(err => {
-                            this.$bvToast.toast(
-                                err.message,
-                                {
-                                    title: "错误",
-                                    variant: "danger",
-                                    autoHideDelay: 3000,
-                                })
-                        }).finally(() => {
-                            this.login_loading = false
-                        })
-                    }
+                if (r.data.bool === true) {
+                    this.$bvModal.show("invitation_code_dialog")
+                    this.do_captcha_b64img()
                 } else {
-                    this.$bvToast.toast(
-                        "未知错误！",
-                        {
-                            title: "错误",
-                            variant: "danger",
-                            autoHideDelay: 3000,
-                        })
-                }
-            }).catch(err => {
-                this.$bvToast.toast(
-                    err.message,
-                    {
-                        title: "错误",
-                        variant: "danger",
-                        autoHideDelay: 3000,
+                    this.$api.logIn(this.sid_val, this.pw_val).then(() => {
+                        this.$cookies.set("logged",
+                            {
+                                "sid": this.sid_val,
+                                "pw": this.pw_val
+                            })
+                        this.$router.replace({name: "user"})
+                    }).catch(err => {
+                        this.$bvToast.toast(
+                            err.response.data.msg || err.message,
+                            {
+                                title: "错误",
+                                variant: "danger",
+                                autoHideDelay: 3000,
+                            })
+                    }).finally(() => {
+                        this.login_loading = false
                     })
+                }
             }).finally(() => {
                 this.login_loading = false
             })
         },
         "do_sign_up"(e) {
             e.preventDefault()
-            this.signup_loading = false
+            this.signup_loading = true
 
             this.$api.checkCaptcha(this.sid_val, this.captcha_val).then(r => {
                 if (r.data.code === 1) {
                     this.captcha_err_show = true
                     this.do_captcha_b64img()
                     document.getElementById("captcha_input").focus()
-                } else if (r.data.code === 0) {
-                    this.$api.signUp(this.sid_val, this.pw_val,
-                        this.invitation_code_val).then(r => {
-                        if (r.data.code === 0) {
-                            if (r.data.valid !== 0) {
-                                this.invitation_code_err_show = true
-                                this.invitation_code_err_code = r.data.valid - 1
-                            } else {
-                                this.$bvModal.hide("invitation_code_dialog")
-
-                                this.$cookies.set("logged",
-                                    {
-                                        "sid": this.sid_val,
-                                        "pw": this.pw_val
-                                    }, "14d")
-
-                                this.$router.replace({name: "user"})
-                            }
+                } else {
+                    this.$api.signUp(
+                        this.sid_val,
+                        this.pw_val,
+                        this.invitation_code_val
+                    ).then(r => {
+                        if (r.data.valid !== 0) {
+                            this.invitation_code_err_msg = r.data.msg
+                            this.invitation_code_err_show = true
+                            this.do_captcha_b64img()
+                            document.getElementById("invitation_code_input").focus()
                         } else {
-                            this.$bvToast.toast(
-                                "未知错误！",
-                                {
-                                    title: "错误",
-                                    variant: "danger",
-                                    autoHideDelay: 3000,
-                                })
-                        }
-                    }).catch(err => {
-                        this.$bvToast.toast(
-                            err.message,
-                            {
-                                title: "错误",
-                                variant: "danger",
-                                autoHideDelay: 3000,
-                            })
+                            this.$bvModal.hide("invitation_code_dialog")
 
-                        this.$bvModal.hide("invitation_code_dialog")
+                            this.$cookies.set("logged",
+                                {
+                                    "sid": this.sid_val,
+                                    "pw": this.pw_val
+                                })
+
+                            this.$router.replace({name: "user"})
+                        }
                     })
                 }
             }).finally(() => {
