@@ -1,6 +1,6 @@
 {
   "name": "xd_covid19_upper",
-  "version": "0.6.15",
+  "version": "0.6.16",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

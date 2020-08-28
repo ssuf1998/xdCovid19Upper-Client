@@ -32,7 +32,7 @@
             <b-badge variant="danger"
                      v-if="user_info['is_pw_wrong'] && user_info['is_up'][k]===2"
             >
-                账户异常
+                密码错误
             </b-badge>
         </div>
 
