@@ -121,7 +121,7 @@ export default {
         "check_loading": true,
         "check_err_show": false,
         "err_info": {
-            "msg": "发生了一个致命错误……暂时无法继续提供服务了。",
+            "msg": "发生了一个致命错误……暂时无法继续提供服务了。（可能在维护迭代中……）",
             "code": 0,
             "raw_err": ""
         }

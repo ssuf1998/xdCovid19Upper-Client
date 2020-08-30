@@ -32,7 +32,7 @@
             <b-badge variant="danger"
                      v-if="user_info['is_pw_wrong'] && user_info['is_up'][k]===2"
             >
-                密码错误
+                账户异常
             </b-badge>
         </div>
 
@@ -45,9 +45,15 @@
             <br>
             客户端信息更新于：{{
                 new Date().toLocaleString("chinese", {hour12: false})
-            }}，
+            }}。
+            <br>
             <b-link @click="refresh">刷新页面</b-link>
-            可更新。
+            可获取最新信息，
+            <b-link href="https://xxcapp.xidian.edu.cn/site/ncov/xidiandailyup"
+                    target="_blank">
+                这里
+            </b-link>
+            可以进入官方填报系统。
         </p>
 
         <b-btn class="btn-block"

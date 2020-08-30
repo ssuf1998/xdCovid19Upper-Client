@@ -28,26 +28,29 @@
         <br>
 
         <span class="font-weight-bold">
-            后端程序多久跑一次？感觉数据刷新很慢？
+            <b-badge variant="danger" class="mx-1">
+                账户异常
+            </b-badge>
+            咋办？
         </span>
         <br>
         <span class="font-size-small">
-            每天早上8点到晚上10点，
-            整点过5分后端程序便会定时启动，
-            自动填报然后更新数据库，
-            故一般要等一会儿才能看到最新数据情况。
+            改密码！提供给填报器的密码无法登录上官方系统，
+            故提示账户异常。
         </span>
 
         <br>
         <br>
 
         <span class="font-weight-bold">
-            密码会有泄露的风险么？
+            后端程序多久跑一次？
         </span>
         <br>
         <span class="font-size-small">
-            有！目前我不知道怎么在密码加密的情况下实现这个系统，
-            如果有人介意，可以不用。
+            每天早上8点到晚上10点，
+            每到第5、25、45分钟，后端程序都会定时启动，
+            自动填报然后更新数据库，
+            故一般要等一会儿才能看到最新数据情况。
         </span>
 
         <br>
@@ -66,17 +69,6 @@
             </b-link>
             和假地理位置注入，
             但是ip伪造起来比较麻烦，所以说还是有可能被发现的。
-        </span>
-
-        <br>
-        <br>
-
-        <span class="font-weight-bold">
-            为什么要搞邀请码……
-        </span>
-        <br>
-        <span class="font-size-small">
-            服务器耐不住。
         </span>
 
     </div>
