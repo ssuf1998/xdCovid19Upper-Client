@@ -1,17 +1,17 @@
-import Vue from "vue"
-import VueRouter from "vue-router"
+import Vue from "vue";
+import VueRouter from "vue-router";
 
-const originalPush = VueRouter.prototype.push
+const originalPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location) {
-    return originalPush.call(this, location).catch(err => err)
-}
+    return originalPush.call(this, location).catch(err => err);
+};
 
 Vue.use(VueRouter);
 
 const router_ = new VueRouter({
     routes: [
         {
-            path: '/',
+            path: "/",
             redirect: {name: "home"}
         },
         {
@@ -34,13 +34,13 @@ const router_ = new VueRouter({
             },
         },
     ]
-})
+});
 
 router_.beforeEach((to, from, next) => {
     if (to.meta.title) {
-        document.title = to.meta.title
+        document.title = to.meta.title;
     }
-    next()
-})
+    next();
+});
 
-export default router_
+export default router_;

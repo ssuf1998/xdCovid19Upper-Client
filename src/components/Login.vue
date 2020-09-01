@@ -133,7 +133,7 @@ export default {
             "captcha_b64img_loading": false,
             "captcha_err_show": false,
             "login_loading": false,
-        }
+        };
     },
     props: {
         "outer_code": {
@@ -144,30 +144,30 @@ export default {
     methods: {
         "do_captcha_b64img"() {
             if (!this.captcha_b64img_loading) {
-                this.captcha_val = ""
-                this.captcha_b64img_loading = true
+                this.captcha_val = "";
+                this.captcha_b64img_loading = true;
                 this.$api.getCaptcha(this.sid_val).then(r => {
-                    this.captcha_b64img = r.data.img
+                    this.captcha_b64img = r.data.img;
                 }).finally(() => {
-                    this.captcha_b64img_loading = false
-                })
+                    this.captcha_b64img_loading = false;
+                });
             }
         },
         "do_login"() {
-            this.login_loading = true
+            this.login_loading = true;
 
             this.$api.isNewUser(this.sid_val).then(r => {
                 if (r.data.bool === true) {
-                    this.$bvModal.show("invitation_code_dialog")
-                    this.do_captcha_b64img()
+                    this.$bvModal.show("invitation_code_dialog");
+                    this.do_captcha_b64img();
                 } else {
                     this.$api.logIn(this.sid_val, this.pw_val).then(() => {
                         this.$cookies.set("logged",
                             {
                                 "sid": this.sid_val,
                                 "pw": this.pw_val
-                            })
-                        this.$router.replace({name: "user"})
+                            });
+                        this.$router.replace({name: "user"});
                     }).catch(err => {
                         this.$bvToast.toast(
                             err.response.data.msg || err.message,
@@ -175,24 +175,24 @@ export default {
                                 title: "错误",
                                 variant: "danger",
                                 autoHideDelay: 3000,
-                            })
+                            });
                     }).finally(() => {
-                        this.login_loading = false
-                    })
+                        this.login_loading = false;
+                    });
                 }
             }).finally(() => {
-                this.login_loading = false
-            })
+                this.login_loading = false;
+            });
         },
         "do_sign_up"(e) {
-            e.preventDefault()
-            this.signup_loading = true
+            e.preventDefault();
+            this.signup_loading = true;
 
             this.$api.checkCaptcha(this.sid_val, this.captcha_val).then(r => {
                 if (r.data.code === 1) {
-                    this.captcha_err_show = true
-                    this.do_captcha_b64img()
-                    document.getElementById("captcha_input").focus()
+                    this.captcha_err_show = true;
+                    this.do_captcha_b64img();
+                    document.getElementById("captcha_input").focus();
                 } else {
                     this.$api.signUp(
                         this.sid_val,
@@ -200,53 +200,53 @@ export default {
                         this.invitation_code_val
                     ).then(r => {
                         if (r.data.valid !== 0) {
-                            this.invitation_code_err_msg = r.data.msg
-                            this.invitation_code_err_show = true
-                            this.do_captcha_b64img()
-                            document.getElementById("invitation_code_input").focus()
+                            this.invitation_code_err_msg = r.data.msg;
+                            this.invitation_code_err_show = true;
+                            this.do_captcha_b64img();
+                            document.getElementById("invitation_code_input").focus();
                         } else {
-                            this.$bvModal.hide("invitation_code_dialog")
+                            this.$bvModal.hide("invitation_code_dialog");
 
                             this.$cookies.set("logged",
                                 {
                                     "sid": this.sid_val,
                                     "pw": this.pw_val
-                                })
+                                });
 
-                            this.$router.replace({name: "user"})
+                            this.$router.replace({name: "user"});
                         }
-                    })
+                    });
                 }
             }).finally(() => {
-                this.signup_loading = false
-            })
+                this.signup_loading = false;
+            });
 
         },
         "hidden_invitation_dialog_clear"() {
-            this.invitation_code_val = this.outer_code
-            this.captcha_val = ""
-            this.invitation_code_err_show = false
-            this.captcha_err_show = false
+            this.invitation_code_val = this.outer_code;
+            this.captcha_val = "";
+            this.invitation_code_err_show = false;
+            this.captcha_err_show = false;
         }
     },
     mounted() {
         if (this.$cookies.isKey("logged")) {
-            this.$router.replace({name: "user"})
+            this.$router.replace({name: "user"});
         }
     },
     computed: {
         "is_login_input_valid"() {
             return this.sid_val.length === 11 &&
                 /^[0-9]+$/.test(this.sid_val) &&
-                this.pw_val.length !== 0
+                this.pw_val.length !== 0;
         },
         "is_invitation_input_valid"() {
             return this.invitation_code_val.length === 6 &&
-                this.captcha_val.length === 4
+                this.captcha_val.length === 4;
         },
 
     }
-}
+};
 </script>
 
 <style lang="scss">

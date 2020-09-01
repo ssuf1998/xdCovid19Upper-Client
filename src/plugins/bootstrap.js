@@ -11,7 +11,7 @@ import {
     LinkPlugin,
     BadgePlugin,
     ToastPlugin,
-} from "bootstrap-vue"
+} from "bootstrap-vue";
 
 
 export default {
@@ -27,4 +27,4 @@ export default {
     LinkPlugin,
     BadgePlugin,
     ToastPlugin,
-}
+};

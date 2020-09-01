@@ -12,15 +12,15 @@
              v-for="(v, k) in up_status_data"
              :key="`up-status-${k}`"
         >
-            <span>{{ get_emoji(v['icon']) }}</span>
-            <span>{{ v['text'] }}</span>
+            <span>{{ get_emoji(v["icon"]) }}</span>
+            <span>{{ v["text"] }}</span>
 
             <b-badge :variant="up_badge_data[user_info['is_up'][k]][0]"
                      v-if="user_info['is_up'][k]!==2
                      || (!user_info['is_pw_wrong']
                      && !user_info['is_pause'])"
             >
-                {{ up_badge_data[user_info['is_up'][k]][1] }}
+                {{ up_badge_data[user_info["is_up"][k]][1] }}
             </b-badge>
 
             <b-badge variant="info"
@@ -234,40 +234,40 @@ export default {
             "change_pw_loading": false,
             "change_pause_loading": false,
             "del_user_loading": false,
-        }
+        };
     },
     mounted() {
         if (!this.logged) {
-            this.$router.replace({name: "home"})
+            this.$router.replace({name: "home"});
         } else {
             this.$api.getUserInfo().then(r => {
-                this.user_info = r.data.user_info
+                this.user_info = r.data.user_info;
                 this.$api.getBaseSysInfo().then(r => {
-                    this.last_timestamp = parseInt(r.data.info["last_suc_timestamp"]) * 1000
-                    let icons = r.data.info["up_icons"]
+                    this.last_timestamp = parseInt(r.data.info["last_suc_timestamp"]) * 1000;
+                    let icons = r.data.info["up_icons"];
 
-                    this.$set(this.up_status_data.morning, "icon", icons[0])
-                    this.$set(this.up_status_data.afternoon, "icon", icons[1])
-                    this.$set(this.up_status_data.evening, "icon", icons[2])
+                    this.$set(this.up_status_data.morning, "icon", icons[0]);
+                    this.$set(this.up_status_data.afternoon, "icon", icons[1]);
+                    this.$set(this.up_status_data.evening, "icon", icons[2]);
                 }).finally(() => {
-                    this.user_info_loading = false
-                })
+                    this.user_info_loading = false;
+                });
             }).catch(() => {
-                this.$cookies.remove("logged")
-                this.$router.replace({name: "home"})
-            })
+                this.$cookies.remove("logged");
+                this.$router.replace({name: "home"});
+            });
         }
     },
     methods: {
         "do_exit"() {
-            this.$cookies.remove("logged")
-            this.$router.replace({name: "home"})
+            this.$cookies.remove("logged");
+            this.$router.replace({name: "home"});
         },
         "do_reset_pos"() {
-            this.get_pos_loading = true
+            this.get_pos_loading = true;
             window.navigator.geolocation.getCurrentPosition(success => {
-                let lat = success.coords.latitude.toFixed(6)
-                let long = success.coords.longitude.toFixed(6)
+                let lat = success.coords.latitude.toFixed(6);
+                let long = success.coords.longitude.toFixed(6);
 
                 this.$api.updateUserInfo(
                     {
@@ -282,7 +282,7 @@ export default {
                             title: "重设定位成功",
                             variant: "success",
                             autoHideDelay: 3000,
-                        })
+                        });
                 }).catch(err => {
                     this.$bvToast.toast(
                         err.response.data.msg || err.message,
@@ -290,10 +290,10 @@ export default {
                             title: "错误",
                             variant: "danger",
                             autoHideDelay: 3000,
-                        })
+                        });
                 }).finally(() => {
-                    this.get_pos_loading = false
-                })
+                    this.get_pos_loading = false;
+                });
 
             }, () => {
                 this.$bvToast.toast(
@@ -302,35 +302,36 @@ export default {
                         title: "重设定位失败",
                         variant: "danger",
                         autoHideDelay: 3000,
-                    })
-                this.get_pos_loading = false
+                    });
+                this.get_pos_loading = false;
             }, {
                 timeout: 10000
-            })
+            });
         },
         "do_change_pw"(e) {
-            e.preventDefault()
+            e.preventDefault();
             if (this.change_pw_data[0] !== this.logged.pw) {
-                this.old_pw_not_same_show = true
-                document.getElementById("old_pw_input").focus()
+                this.old_pw_not_same_show = true;
+                document.getElementById("old_pw_input").focus();
             } else {
-                this.change_pw_loading = true
+                this.change_pw_loading = true;
 
                 this.$api.updateUserInfo(
                     {
                         "pw": this.change_pw_data[1]
                     }).then(() => {
-                    this.$set(this.logged, "pw", this.change_pw_data[1])
-                    this.$cookies.set("logged", this.logged)
+                    this.$set(this.logged, "pw", this.change_pw_data[1]);
+                    this.user_info["is_pw_wrong"] = false;
+                    this.$cookies.set("logged", this.logged);
 
-                    this.$bvModal.hide("change_pw_dialog")
+                    this.$bvModal.hide("change_pw_dialog");
                     this.$bvToast.toast(
-                        "修改密码成功！",
+                        "修改密码成功！将在下一次自动填报中更新账户状态。",
                         {
                             title: "修改密码",
                             variant: "success",
                             autoHideDelay: 3000,
-                        })
+                        });
                 }).catch(err => {
                     this.$bvToast.toast(
                         err.response.data.msg || err.message,
@@ -338,27 +339,27 @@ export default {
                             title: "错误",
                             variant: "danger",
                             autoHideDelay: 3000,
-                        })
+                        });
                 }).finally(() => {
-                    this.change_pw_loading = false
-                })
+                    this.change_pw_loading = false;
+                });
             }
         },
         "do_change_pause"(bool) {
-            this.change_pause_loading = true
+            this.change_pause_loading = true;
 
             this.$api.updateUserInfo(
                 {
                     "is_pause": bool
                 }).then(() => {
-                this.user_info["is_pause"] = bool
+                this.user_info["is_pause"] = bool;
                 this.$bvToast.toast(
                     "操作成功！",
                     {
                         title: bool ? "暂停填报" : "恢复填报",
                         variant: "success",
                         autoHideDelay: 3000,
-                    })
+                    });
             }).catch(err => {
                 this.$bvToast.toast(
                     err.response.data.msg || err.message,
@@ -366,17 +367,17 @@ export default {
                         title: "错误",
                         variant: "danger",
                         autoHideDelay: 3000,
-                    })
+                    });
             }).finally(() => {
-                this.change_pause_loading = false
-            })
+                this.change_pause_loading = false;
+            });
         },
         "do_del_user"() {
-            this.del_user_loading = true
+            this.del_user_loading = true;
 
             this.$api.delUser().then(() => {
-                this.$cookies.remove("logged")
-                this.$router.replace({name: "home"})
+                this.$cookies.remove("logged");
+                this.$router.replace({name: "home"});
             }).catch(err => {
                 this.$bvToast.toast(
                     err.response.data.msg || err.message,
@@ -384,27 +385,27 @@ export default {
                         title: "错误",
                         variant: "danger",
                         autoHideDelay: 3000,
-                    })
+                    });
             }).finally(() => {
-                this.del_user_loading = false
-            })
+                this.del_user_loading = false;
+            });
         },
         "refresh"() {
-            location.reload()
+            location.reload();
         },
         "get_emoji"(emoji_str) {
-            return this.$emoji.get(emoji_str)
+            return this.$emoji.get(emoji_str);
         }
     },
     computed: {
         "logged"() {
-            return this.$cookies.get("logged")
+            return this.$cookies.get("logged");
         },
         "change_pw_all_valid"() {
-            return this.change_pw_data[0].length !== 0 && this.change_pw_data[1].length !== 0
+            return this.change_pw_data[0].length !== 0 && this.change_pw_data[1].length !== 0;
         }
     }
-}
+};
 </script>
 
 <style lang="scss">

@@ -1,6 +1,6 @@
 # xdCovid19Upper Client
 
-![GPL_v3](https://img.shields.io/badge/GPL-v3-blue) ![author_ssuf1998](https://img.shields.io/badge/author-ssuf1998-red) ![version_0.6.17](https://img.shields.io/badge/version-0.6.17-green)
+![GPL_v3](https://img.shields.io/badge/GPL-v3-blue) ![author_ssuf1998](https://img.shields.io/badge/author-ssuf1998-red) ![version_0.6.19](https://img.shields.io/badge/version-0.6.19-green)
 
 ![xcu_client](https://img.shields.io/badge/xcu-client-9cf)
 

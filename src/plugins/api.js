@@ -1,12 +1,12 @@
-import service from "./request"
-import Vue from "vue"
+import service from "./request";
+import Vue from "vue";
 
 const check = () => {
     return service({
         url: "/check",
         method: "get",
-    })
-}
+    });
+};
 
 const isNewUser = (sid) => {
     return service({
@@ -15,8 +15,8 @@ const isNewUser = (sid) => {
         data: {
             sid
         }
-    })
-}
+    });
+};
 
 const signUp = (sid, pw, invitation_code) => {
     return service({
@@ -27,8 +27,8 @@ const signUp = (sid, pw, invitation_code) => {
             pw,
             code: invitation_code
         }
-    })
-}
+    });
+};
 
 const logIn = (sid, pw) => {
     return service({
@@ -38,8 +38,8 @@ const logIn = (sid, pw) => {
             sid,
             pw,
         }
-    })
-}
+    });
+};
 
 const getUserInfo = () => {
     return service({
@@ -49,8 +49,8 @@ const getUserInfo = () => {
             "sid": Vue.prototype.$cookies.get("logged")["sid"],
             "pw": Vue.prototype.$cookies.get("logged")["pw"],
         }
-    })
-}
+    });
+};
 
 const delUser = () => {
     return service({
@@ -60,8 +60,8 @@ const delUser = () => {
             "sid": Vue.prototype.$cookies.get("logged")["sid"],
             "pw": Vue.prototype.$cookies.get("logged")["pw"],
         }
-    })
-}
+    });
+};
 
 const updateUserInfo = (new_user_info) => {
     return service({
@@ -72,15 +72,15 @@ const updateUserInfo = (new_user_info) => {
             "pw": Vue.prototype.$cookies.get("logged")["pw"],
             new_user_info
         }
-    })
-}
+    });
+};
 
 const getBaseSysInfo = () => {
     return service({
         url: "/getbasesysinfo",
         method: "get",
-    })
-}
+    });
+};
 
 const getCaptcha = (cid) => {
     return service({
@@ -89,8 +89,8 @@ const getCaptcha = (cid) => {
         params: {
             cid,
         }
-    })
-}
+    });
+};
 
 const checkCaptcha = (cid, captcha) => {
     return service({
@@ -100,8 +100,8 @@ const checkCaptcha = (cid, captcha) => {
             cid,
             "v": captcha,
         }
-    })
-}
+    });
+};
 
 export default {
     check,
@@ -114,4 +114,4 @@ export default {
     getBaseSysInfo,
     getCaptcha,
     checkCaptcha
-}
+};

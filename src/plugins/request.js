@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from "axios";
 
 const service = axios.create({
     baseURL: process.env.VUE_APP_API,
@@ -36,4 +36,4 @@ const service = axios.create({
 // )
 
 
-export default service
+export default service;

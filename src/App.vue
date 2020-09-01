@@ -127,32 +127,32 @@ export default {
         }
     }),
     mounted() {
-        this.$cookies.config("14d")
+        this.$cookies.config("14d");
         this.$api.check().then(() => {
-            this.check_loading = false
+            this.check_loading = false;
         }).catch(err => {
             if (err.response) {
-                this.$set(this.err_info, "msg", err.response.data.msg || "")
-                this.$set(this.err_info, "code", err.response.data.code)
-                this.$set(this.err_info, "raw_err", err.response.data.raw)
+                this.$set(this.err_info, "msg", err.response.data.msg || "");
+                this.$set(this.err_info, "code", err.response.data.code);
+                this.$set(this.err_info, "raw_err", err.response.data.raw);
             } else {
-                this.$set(this.err_info, "code", 999)
-                this.$set(this.err_info, "raw_err", err.message)
+                this.$set(this.err_info, "code", 999);
+                this.$set(this.err_info, "raw_err", err.message);
             }
-            this.check_err_show = true
-        })
+            this.check_err_show = true;
+        });
     },
     methods: {
         "refresh"() {
-            location.reload()
+            location.reload();
         },
     },
     computed: {
         "ver_str"() {
-            return `client ${process.env.VUE_APP_CLIENT_VERSION} server ${process.env.VUE_APP_SERVER_VERSION}`
+            return `client ${process.env.VUE_APP_CLIENT_VERSION} server ${process.env.VUE_APP_SERVER_VERSION}`;
         }
     }
-}
+};
 </script>
 
 <style lang="scss">
