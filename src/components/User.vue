@@ -103,6 +103,7 @@
                     variant="secondary"
                     class="icon-btn"
                     v-b-modal:question_dialog
+                    v-if="qa_data && qa_data.length!==0"
             >
                 ?
             </b-icon>
@@ -187,8 +188,9 @@
                  ok-only
                  title="有疑问？"
                  scrollable
+                 v-if="qa_data && qa_data.length!==0"
         >
-            <Question></Question>
+            <Question :qa_data="qa_data"></Question>
         </b-modal>
 
     </div>
@@ -234,6 +236,8 @@ export default {
             "change_pw_loading": false,
             "change_pause_loading": false,
             "del_user_loading": false,
+
+            "qa_data": []
         };
     },
     mounted() {
@@ -246,9 +250,16 @@ export default {
                     this.last_timestamp = parseInt(r.data.info["last_suc_timestamp"]) * 1000;
                     let icons = r.data.info["up_icons"];
 
-                    this.$set(this.up_status_data.morning, "icon", icons[0]);
-                    this.$set(this.up_status_data.afternoon, "icon", icons[1]);
-                    this.$set(this.up_status_data.evening, "icon", icons[2]);
+                    if (icons && icons.length !== 0) {
+                        this.$set(this.up_status_data.morning, "icon", icons[0]);
+                        this.$set(this.up_status_data.afternoon, "icon", icons[1]);
+                        this.$set(this.up_status_data.evening, "icon", icons[2]);
+                    }
+
+                    this.$api.getQA().then(r => {
+                        this.$set(this, "qa_data", r.data.data["qa"]);
+                    });
+
                 }).finally(() => {
                     this.user_info_loading = false;
                 });

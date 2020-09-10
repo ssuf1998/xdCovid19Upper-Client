@@ -82,6 +82,21 @@ const getBaseSysInfo = () => {
     });
 };
 
+const getVersions = () => {
+    return service({
+        url: "/getversions",
+        method: "get",
+    });
+};
+
+
+const getQA = () => {
+    return service({
+        url: "/getqa",
+        method: "get",
+    });
+};
+
 const getCaptcha = (cid) => {
     return service({
         url: "/captcha",
@@ -112,6 +127,8 @@ export default {
     delUser,
     updateUserInfo,
     getBaseSysInfo,
+    getVersions,
+    getQA,
     getCaptcha,
     checkCaptcha
 };

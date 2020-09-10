@@ -5,7 +5,7 @@
                    class="full-height"
         >
             <div class="d-flex flex-column justify-content-between full-height">
-                <div v-if="!check_err_show">
+                <div v-if="!check_err_show" class="r_view">
                     <router-view>
                     </router-view>
                 </div>
@@ -121,15 +121,25 @@ export default {
         "check_loading": true,
         "check_err_show": false,
         "err_info": {
-            "msg": "发生了一个致命错误……暂时无法继续提供服务了。（可能在维护迭代中……）",
+            "msg": "发生了一个致命错误……暂时无法继续提供服务了，可能正在维护迭代中。",
             "code": 0,
             "raw_err": ""
+        },
+        "versions": {
+            "server": "",
+            "client": "",
         }
     }),
     mounted() {
         this.$cookies.config("14d");
         this.$api.check().then(() => {
-            this.check_loading = false;
+            this.$api.getVersions().then(r => {
+                let v = r.data.info["versions"];
+                this.$set(this.versions, "server", v["server"] || "");
+                this.$set(this.versions, "client", v["client"] || "");
+            }).finally(() => {
+                this.check_loading = false;
+            });
         }).catch(err => {
             if (err.response) {
                 this.$set(this.err_info, "msg", err.response.data.msg || "");
@@ -149,7 +159,7 @@ export default {
     },
     computed: {
         "ver_str"() {
-            return `client ${process.env.VUE_APP_CLIENT_VERSION} server ${process.env.VUE_APP_SERVER_VERSION}`;
+            return `client v${this.versions.client} server v${this.versions.server}`;
         }
     }
 };
@@ -162,9 +172,13 @@ export default {
 
 @media screen and (min-width: 600px) {
     #app {
-        width: 400px;
+        width: 450px;
         background-color: white;
         box-shadow: 0 0 4rem rgba(0, 0, 0, 0.25);
+
+        .r_view {
+            padding: 0 25px;
+        }
     }
     body {
         display: flex;
