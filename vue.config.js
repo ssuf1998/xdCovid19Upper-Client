@@ -10,8 +10,8 @@ module.exports = {
                 "chunk-common",
                 "index"
             ],
-            meta: {revised: `${process.env.VUE_APP_CLIENT_VERSION}_${new Date().getTime()}`}
+            meta: {revised: (new Date().getTime()).toString()}
         },
     },
 
-}
+};
