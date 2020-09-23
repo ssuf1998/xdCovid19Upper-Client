@@ -4,8 +4,10 @@
                    blur="10px"
                    class="full-height"
         >
-            <div class="d-flex flex-column justify-content-between full-height">
-                <div v-if="!check_err_show" class="r_view">
+            <div class="d-flex flex-column justify-content-between full-height"
+                 v-if="!check_err_show"
+            >
+                <div class="r_view">
                     <router-view>
                     </router-view>
                 </div>
@@ -64,9 +66,29 @@
                                 </span>
                             </div>
 
-                            <b-link href="mailto:ssuf1998@126.com">
-                                联系作者
-                            </b-link>
+                            <span>
+                                <b-icon icon="envelope-fill"
+                                        variant="secondary"
+                                        class="mr-1"
+                                >
+                                    电邮联系作者
+                                </b-icon>
+                                <b-link href="mailto:ssuf1998@126.com">
+                                    ssuf1998@126.com
+                                </b-link>
+                                <br>
+
+                                <b-icon icon="chat-dots-fill"
+                                        variant="secondary"
+                                        class="mr-1"
+                                >
+                                    微信联系作者
+                                </b-icon>
+                                <span>
+                                    微信号 ssuf1998
+                                </span>
+                            </span>
+
                         </div>
 
                     </b-modal>
@@ -75,7 +97,7 @@
 
             <template v-slot:overlay v-if="check_err_show">
                 <div class="d-flex flex-column">
-                    <span v-text="err_info['msg']">
+                    <span v-html="err_info['msg']">
                     </span>
                     <span v-text="`错误代码：${err_info['code']}`"
                           class="text-gray font-size-small"
@@ -88,11 +110,6 @@
                     </span>
 
                     <div class="d-flex my-4 flex-wrap">
-                        <b-link href="mailto:ssuf1998@126.com"
-                                class="mx-1"
-                        >
-                            联系作者
-                        </b-link>
                         <b-link class="mx-1"
                                 @click="refresh"
                         >
@@ -121,7 +138,7 @@ export default {
         "check_loading": true,
         "check_err_show": false,
         "err_info": {
-            "msg": "发生了一个致命错误……暂时无法继续提供服务了，可能正在维护迭代中。",
+            "msg": "发生了一个致命错误……<br>暂时无法继续提供服务了，可能是正在维护迭代中。",
             "code": 0,
             "raw_err": ""
         },
