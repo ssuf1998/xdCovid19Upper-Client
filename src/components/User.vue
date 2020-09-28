@@ -8,7 +8,7 @@
             欢迎，用户 {{ logged["sid"] }} ！
         </p>
 
-        <div class="d-flex justify-content-around align-items-center mb-2 up-status"
+        <div class="d-flex justify-content-around align-items-center up-status mb-2"
              v-for="(v, k) in up_status_data"
              :key="`up-status-${k}`"
         >
@@ -18,9 +18,16 @@
             <b-badge :variant="up_badge_data[user_info['is_up'][k]][0]"
                      v-if="user_info['is_up'][k]!==2
                      || (!user_info['is_pw_wrong']
-                     && !user_info['is_pause'])"
+                     && !user_info['is_pause']
+                     && user_info['in_queue']!==0)"
             >
                 {{ up_badge_data[user_info["is_up"][k]][1] }}
+            </b-badge>
+
+            <b-badge variant="info"
+                     v-if="!user_info['is_pw_wrong'] && user_info['is_up'][k]===2 && user_info['in_queue']===0"
+            >
+                正在填报
             </b-badge>
 
             <b-badge variant="info"
@@ -37,6 +44,25 @@
         </div>
 
         <br>
+
+        <div class="d-flex justify-content-center align-items-center"
+             v-if="user_info['in_queue']>0">
+            <b-icon icon="alarm-fill"
+                    variant="secondary"
+                    class="m-2"
+            >
+                排队闹钟
+            </b-icon>
+            <span class="font-size-small">
+                排队中，前面还有
+                <span class="font-weight-bold">
+                    {{ user_info["in_queue"] }}
+                </span>
+                人……
+            </span>
+        </div>
+
+        <br v-if="user_info['in_queue']>0">
 
         <p class="text-center font-size-small text-gray">
             后端最近成功运行时间：{{
@@ -227,7 +253,6 @@ export default {
                 ["secondary", "状态未知"],
                 ["success", "填报成功"],
                 ["warning", "暂未填报"],
-                ["info", "正在填报"],
             ],
             "get_pos_loading": false,
             "change_pw_data": ["", ""],

@@ -213,7 +213,7 @@ body, html {
 }
 
 .page-title {
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
 }
 
 .b-toast {
