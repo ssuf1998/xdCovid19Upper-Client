@@ -18,16 +18,9 @@
             <b-badge :variant="up_badge_data[user_info['is_up'][k]][0]"
                      v-if="user_info['is_up'][k]!==2
                      || (!user_info['is_pw_wrong']
-                     && !user_info['is_pause']
-                     && user_info['in_queue']!==0)"
+                     && !user_info['is_pause'])"
             >
                 {{ up_badge_data[user_info["is_up"][k]][1] }}
-            </b-badge>
-
-            <b-badge variant="info"
-                     v-if="!user_info['is_pw_wrong'] && user_info['is_up'][k]===2 && user_info['in_queue']===0"
-            >
-                正在填报
             </b-badge>
 
             <b-badge variant="info"
@@ -46,23 +39,26 @@
         <br>
 
         <div class="d-flex justify-content-center align-items-center"
-             v-if="user_info['in_queue']>0">
+             v-if="user_info['in_queue']> -1">
             <b-icon icon="alarm-fill"
                     variant="secondary"
                     class="m-2"
             >
                 排队闹钟
             </b-icon>
-            <span class="font-size-small">
+            <span class="font-size-small" v-if="user_info['in_queue']> 0">
                 排队中，前面还有
                 <span class="font-weight-bold">
                     {{ user_info["in_queue"] }}
                 </span>
                 人……
             </span>
+            <span class="font-size-small" v-else>
+                在填了在填了……
+            </span>
         </div>
 
-        <br v-if="user_info['in_queue']>0">
+        <br v-if="user_info['in_queue']> -1">
 
         <p class="text-center font-size-small text-gray">
             后端最近成功运行时间：{{
